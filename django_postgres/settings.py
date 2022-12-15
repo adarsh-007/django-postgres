@@ -50,7 +50,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = "django_postgres.urls"
-
+SESSION_COOKIE_SECURE = False
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",

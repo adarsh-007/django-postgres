@@ -43,14 +43,15 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
   gettext \
   # cleaning up unused files
   && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
-  && rm -rf /var/lib/apt/lists/*
+  && rm -rf /var/lib/apt/lists/* \
+  && apt-get install postgresql-contrib
 
 RUN echo "deb [trusted=yes] https://nginx.org/packages/debian/ squeeze nginx" >> /etc/apt/sources.list
 RUN echo "deb-src [trusted=yes] https://nginx.org/packages/debian/ squeeze nginx" >> /etc/apt/sources.list
 RUN apt-get  update --allow-unauthenticated
 
-RUN apt-get install nginx -y
-COPY ./config/nginx.conf /etc/nginx/nginx.conf
+# RUN apt-get install nginx -y
+# COPY ./config/nginx.conf /etc/nginx/nginx.conf
 
 # All absolute dir copies ignore workdir instruction. All relative dir copies are wrt to the workdir instruction
 # copy python dependency wheels from python-build-stage
@@ -58,7 +59,7 @@ COPY --from=python-build-stage /usr/src/app/wheels  /wheels/
 
 # use wheels to install python dependencies
 RUN pip install --no-cache-dir --no-index --find-links=/wheels/ /wheels/* \
-	&& rm -rf /wheels/
+  && rm -rf /wheels/
 
 COPY ./compose/local/django/entrypoint /entrypoint
 RUN sed -i 's/\r$//g' /entrypoint
